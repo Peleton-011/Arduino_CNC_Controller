@@ -21,4 +21,15 @@ const int steps_per_mmZ = 0;
 
 
 void setup()
-{}
+{
+  Serial.begin(115200);
+  pinMode(STEPX, OUTPUT);
+  pinMode(DIRX, OUTPUT);
+  pinMode(STEPY, OUTPUT);
+  pinMode(DIRY, OUTPUT);
+  pinMode(STEPZ, OUTPUT);
+  pinMode(DIRZ, OUTPUT);
+  pinMode(TOOL, OUTPUT);
+}
+
+
