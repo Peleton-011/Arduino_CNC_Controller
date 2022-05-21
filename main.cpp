@@ -101,11 +101,99 @@ int homingX()
         digitalWrite(DIRX, HIGH);
     }
 
-    while (homing_x_0 == 0)
+    while (homing_x_1 == 0)
     {
         digitalWrite(STEPX, HIGH);
         delayMicroseconds(motor_period);
         digitalWrite(STEPX, LOW);
+        delayMicroseconds(motor_period);
+
+        step_count++;
+    }
+    
+
+    return step_count;
+} 
+
+int homingY()
+{
+    int step_count = 0;
+
+    if (default_y_direction_cc)
+    {
+        digitalWrite(DIRY, LOW);        
+    }
+    else
+    {
+        digitalWrite(DIRY, HIGH);
+    }
+    
+    while (homing_y_0 == 0)
+    {
+        digitalWrite(STEPY, HIGH);
+        delayMicroseconds(motor_period);
+        digitalWrite(STEPY, LOW);
+        delayMicroseconds(motor_period);
+    }
+    
+    if (!default_y_direction_cc)
+    {
+        digitalWrite(DIRY, LOW);        
+    }
+    else
+    {
+        digitalWrite(DIRY, HIGH);
+    }
+
+    while (homing_y_1 == 0)
+    {
+        digitalWrite(STEPY, HIGH);
+        delayMicroseconds(motor_period);
+        digitalWrite(STEPY, LOW);
+        delayMicroseconds(motor_period);
+
+        step_count++;
+    }
+    
+
+    return step_count;
+} 
+
+int homingZ()
+{
+    int step_count = 0;
+
+    if (default_z_direction_cc)
+    {
+        digitalWrite(DIRZ, LOW);        
+    }
+    else
+    {
+        digitalWrite(DIRZ, HIGH);
+    }
+    
+    while (homing_z_0 == 0)
+    {
+        digitalWrite(STEPZ, HIGH);
+        delayMicroseconds(motor_period);
+        digitalWrite(STEPZ, LOW);
+        delayMicroseconds(motor_period);
+    }
+    
+    if (!default_z_direction_cc)
+    {
+        digitalWrite(DIRZ, LOW);        
+    }
+    else
+    {
+        digitalWrite(DIRZ, HIGH);
+    }
+
+    while (homing_z_1 == 0)
+    {
+        digitalWrite(STEPZ, HIGH);
+        delayMicroseconds(motor_period);
+        digitalWrite(STEPZ, LOW);
         delayMicroseconds(motor_period);
 
         step_count++;
