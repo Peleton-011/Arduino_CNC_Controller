@@ -39,11 +39,16 @@ const int steps_per_mmX = 50;
 const int steps_per_mmY = 50;
 const int steps_per_mmZ = 50;
 
+//Default spinning directions. Should be determined through testing
+const bool default_x_direction_cc = true;
+const bool default_y_direction_cc = true;
+const bool default_z_direction_cc = true;
+
+//Setup motor period to enforce motor frequency
+int motor_period = 1000/motor_frequency;
+
 void setup()
 {
-    //Setup motor period to enforce motor frequency
-    int motor_period = 1000/motor_frequency;
-
     //Start serial connection of 115,200 bauds
     Serial.begin(115200);
     
@@ -64,6 +69,51 @@ void setup()
     pinMode(homing_y_1, INPUT);
     pinMode(homing_z_1, INPUT);
 }
+
+//Homing functions
+int homingX()
+{
+    int step_count = 0;
+
+    if (default_x_direction_cc)
+    {
+        digitalWrite(DIRX, LOW);        
+    }
+    else
+    {
+        digitalWrite(DIRX, HIGH);
+    }
+    
+    while (homing_x_0 == 0)
+    {
+        digitalWrite(STEPX, HIGH);
+        delayMicroseconds(motor_period);
+        digitalWrite(STEPX, LOW);
+        delayMicroseconds(motor_period);
+    }
+    
+    if (!default_x_direction_cc)
+    {
+        digitalWrite(DIRX, LOW);        
+    }
+    else
+    {
+        digitalWrite(DIRX, HIGH);
+    }
+
+    while (homing_x_0 == 0)
+    {
+        digitalWrite(STEPX, HIGH);
+        delayMicroseconds(motor_period);
+        digitalWrite(STEPX, LOW);
+        delayMicroseconds(motor_period);
+
+        step_count++;
+    }
+    
+
+    return step_count;
+} 
 
 void loop()
 {
