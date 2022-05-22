@@ -44,6 +44,12 @@ const bool default_x_direction_cc = true;
 const bool default_y_direction_cc = true;
 const bool default_z_direction_cc = true;
 
+//Range of action
+int range[3];
+
+//Current position in steps
+int pos[3];
+
 //Setup motor period to enforce motor frequency
 int motor_period = 1000/motor_frequency;
 
@@ -68,6 +74,17 @@ void setup()
     pinMode(homing_x_1, INPUT);
     pinMode(homing_y_1, INPUT);
     pinMode(homing_z_1, INPUT);
+
+    //Homing
+    range[0] = homingX();
+    range[1] = homingY();
+    range[2] = homingZ();
+
+    //Set initial position
+    for (int i = 0; i < 3; i++)
+    {
+        pos[i] = range[i];
+    }
 }
 
 //Homing functions
