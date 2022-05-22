@@ -22,7 +22,7 @@ const int homing_pins[6] = {1, 2, 3, 11, 12, 13};
 //Other parameters
 const int motor_frequency = 50;
 
-const in actuation_length = 500;
+const int actuation_length = 500;
 
 const int axes = 3;
 
@@ -94,7 +94,7 @@ void setDirection(int axis, bool opposite)
     return;
 }
 
-//Homing functions
+//Homing function
 int homing(int axis)
 {
     int step_count = 0;
@@ -133,10 +133,38 @@ void loop()
 void move(int coord, int axis)
 {
     int distance = pos[axis] - coord;
-    //Decide motor direction based on sign of the distance
-    if (distance < 0)
+    //Return if the distance is 0
+    if (!distance)
     {
+        return;
+    }
+    
+    setDirection(axis, (distance > 0));
 
+    while (!!distance)
+    {
+        //Move a step
+        digitalWrite(STEPS[axis], HIGH);
+        delayMicroseconds(motor_period);
+        digitalWrite(STEPS[axis], LOW);
+        delayMicroseconds(motor_period);
+
+        //Update position
+        if (distance > 0)
+        {
+            pos[axis]++;
+        }
+        else if (distance < 0)
+        {
+            pos[axis]--;
+        }
+        else //Return if the position is reached
+        {
+            return;
+        }
+
+        //Update distance
+        distance = pos[axis] - coord;
     }
 }
 
