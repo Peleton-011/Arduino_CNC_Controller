@@ -2,10 +2,10 @@
 //Declare initial variables and parametrs
 
 //Step
-const int STEPS[3] = {5, 7, 9};
+const int STEPS[3] = {5, 6, 9};
 
 //Dir
-const int DIRS[3] = {4, 6, 8};
+const int DIRS[3] = {4, 7, 8};
 
 //Tool control
 const int TOOL = 10;
@@ -21,6 +21,8 @@ const int homing_pins[6] = {1, 2, 3, 11, 12, 13};
 
 //Other parameters
 const int motor_frequency = 50;
+
+const in actuation_length = 500;
 
 const int axes = 3;
 
@@ -107,7 +109,6 @@ int homing(int axis)
 
         step_count++;
     }
-    
 
     return step_count;
 } 
@@ -117,4 +118,19 @@ void loop()
     return;
 }
 
-void moveX(int coord)
+//Generic function to move a specific axis to a specific position
+void move(int coord, int axis)
+{
+    int distance = pos[axis] - coord;
+    //Decide motor direction based on sign of the distance
+    if 
+}
+
+void useTool()
+{
+    digitalWrite(TOOL, HIGH);
+    move(range[3], 3);
+    delayMicroseconds(actuation_length);
+    move(0, 3);
+    digitalWrite(TOOL, LOW);
+}
