@@ -69,19 +69,37 @@ void setup()
     }
 }
 
+//Set turning direction, if opposite is false it will be the default direction for that axis
+//otherwise it will be the other direction
+void setDirection(int axis, bool opposite)
+{
+    if (!opposite)
+    {
+        if (default_direction_cc[axis])
+        {
+            digitalWrite(DIRS[axis], LOW);
+            return;
+        }
+
+        digitalWrite(DIRS[axis], HIGH);
+        return;
+    }
+    
+    if (!default_direction_cc[axis])
+    {
+        digitalWrite(DIRS[axis], LOW);        
+        return;
+    }
+    digitalWrite(DIRS[axis], HIGH);
+    return;
+}
+
 //Homing functions
 int homing(int axis)
 {
     int step_count = 0;
 
-    if (default_direction_cc[axis])
-    {
-        digitalWrite(DIRS[axis], LOW);        
-    }
-    else
-    {
-        digitalWrite(DIRS[axis], HIGH);
-    }
+    setDirection(axis, false);
     
     while (digitalRead(homing_pins[axis]) == 0)
     {
@@ -91,14 +109,7 @@ int homing(int axis)
         delayMicroseconds(motor_period);
     }
     
-    if (!default_direction_cc[axis])
-    {
-        digitalWrite(DIRS[axis], LOW);        
-    }
-    else
-    {
-        digitalWrite(DIRS[axis], HIGH);
-    }
+    setDirection(axis, true);
 
     while (digitalRead(homing_pins[3]) == 0)
     {
@@ -123,7 +134,10 @@ void move(int coord, int axis)
 {
     int distance = pos[axis] - coord;
     //Decide motor direction based on sign of the distance
-    if 
+    if (distance < 0)
+    {
+
+    }
 }
 
 void useTool()
