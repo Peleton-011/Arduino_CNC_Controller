@@ -1,3 +1,7 @@
+//#include <stdint.h>
+#include <SPI.h>
+#include <SD.h>
+#include <TFT.h>
 
 //Declare initial variables and parametrs
 
@@ -25,8 +29,6 @@ const int motor_frequency = 50;
 const int actuation_length = 500;
 
 const int axes = 3;
-
-
 
 //Default spinning directions. Should be determined through testing
 const bool default_direction_cc[3] = {true, true, true};
@@ -124,9 +126,12 @@ int homing(int axis)
     return step_count;
 } 
 
-void loop()
+//Move to coords and use the tool there function
+void moveAndTool(int coordX, int coordY)
 {
-    return;
+    move(coordX, 0);
+    move(coordY, 1);
+    useTool();
 }
 
 //Generic function to move a specific axis to a specific position
@@ -168,6 +173,7 @@ void move(int coord, int axis)
     }
 }
 
+//Function that uses tool whichever the current coordinates
 void useTool()
 {
     digitalWrite(TOOL, HIGH);
@@ -175,4 +181,27 @@ void useTool()
     delayMicroseconds(actuation_length);
     move(0, 3);
     digitalWrite(TOOL, LOW);
+}
+
+//Read a number of bytes from a file
+int32_t readNbytesInt(File *p_file, int position, byte nBytes)
+{
+    if (nBytes > 4)
+        return 0;
+
+    p_file->seek(position);
+
+    int32_t weight = 1;
+    int32_t result = 0;
+    for (; nBytes; nBytes--)
+    {
+        result += weight * p_file->read();
+        weight <<= 8;
+    }
+    return result;
+}
+
+void loop()
+{
+    return;
 }
