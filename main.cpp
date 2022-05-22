@@ -1,17 +1,11 @@
 
 //Declare initial variables and parametrs
 
-//X axis 
-const int DIRX = 4;
-const int STEPX = 5;
+//Step
+const int STEPS[3] = {5, 7, 9};
 
-//Y axis
-const int DIRY = 6;
-const int STEPY = 7;
-
-//Z axis
-const int DIRZ = 8;
-const int STEPZ = 9;
+//Dir
+const int DIRS[3] = {4, 6, 8};
 
 //Tool control
 const int TOOL = 10;
@@ -20,29 +14,20 @@ const int TOOL = 10;
 const int  steps_per_rev = 200;
 
 //Steps per millimiter for each axis
-const int steps_per_mmX = 0;
-const int steps_per_mmY = 0;
-const int steps_per_mmZ = 0;
+const int steps_per_mm[3] = {0, 0, 0};
 
 //Homing pins
-const int homing_x_0 = 1;
-const int homing_y_0 = 2;
-const int homing_z_0 = 3;
-const int homing_x_1 = 11;
-const int homing_y_1 = 12;
-const int homing_z_1 = 13;
+const int homing_pins[6] = {1, 2, 3, 11, 12, 13};
 
 //Other parameters
 const int motor_frequency = 50;
 
-const int steps_per_mmX = 50;
-const int steps_per_mmY = 50;
-const int steps_per_mmZ = 50;
+const int axes = 3;
+
+
 
 //Default spinning directions. Should be determined through testing
-const bool default_x_direction_cc = true;
-const bool default_y_direction_cc = true;
-const bool default_z_direction_cc = true;
+const bool default_direction_cc[3] = {true, true, true};
 
 //Range of action
 int range[3];
@@ -59,158 +44,65 @@ void setup()
     Serial.begin(115200);
     
     //Setup all output pins
-    pinMode(STEPX, OUTPUT);
-    pinMode(DIRX, OUTPUT);
-    pinMode(STEPY, OUTPUT);
-    pinMode(DIRY, OUTPUT);
-    pinMode(STEPZ, OUTPUT);
-    pinMode(DIRZ, OUTPUT);
+    for (int i = 0; i < axes; i++)
+    {
+        pinMode(DIRS[i], OUTPUT);
+        pinMode(STEPS[i], OUTPUT);
+    }
+    
     pinMode(TOOL, OUTPUT);
 
     //Setup all input pins
-    pinMode(homing_x_0, INPUT);
-    pinMode(homing_y_0, INPUT);
-    pinMode(homing_z_0, INPUT);
-    pinMode(homing_x_1, INPUT);
-    pinMode(homing_y_1, INPUT);
-    pinMode(homing_z_1, INPUT);
-
-    //Homing
-    range[0] = homingX();
-    range[1] = homingY();
-    range[2] = homingZ();
-
-    //Set initial position
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < (axes * 2); i++)
     {
+        pinMode(homing_pins[i], INPUT);
+    }
+
+
+    //Homing and initial position
+    for (int i = 0; i < axes; i++)
+    {
+        range[i] = homing(i);
         pos[i] = range[i];
     }
 }
 
 //Homing functions
-int homingX()
+int homing(int axis)
 {
     int step_count = 0;
 
-    if (default_x_direction_cc)
+    if (default_direction_cc[axis])
     {
-        digitalWrite(DIRX, LOW);        
+        digitalWrite(DIRS[axis], LOW);        
     }
     else
     {
-        digitalWrite(DIRX, HIGH);
+        digitalWrite(DIRS[axis], HIGH);
     }
     
-    while (homing_x_0 == 0)
+    while (digitalRead(homing_pins[axis]) == 0)
     {
-        digitalWrite(STEPX, HIGH);
+        digitalWrite(STEPS[axis], HIGH);
         delayMicroseconds(motor_period);
-        digitalWrite(STEPX, LOW);
+        digitalWrite(STEPS[axis], LOW);
         delayMicroseconds(motor_period);
     }
     
-    if (!default_x_direction_cc)
+    if (!default_direction_cc[axis])
     {
-        digitalWrite(DIRX, LOW);        
+        digitalWrite(DIRS[axis], LOW);        
     }
     else
     {
-        digitalWrite(DIRX, HIGH);
+        digitalWrite(DIRS[axis], HIGH);
     }
 
-    while (homing_x_1 == 0)
+    while (digitalRead(homing_pins[3]) == 0)
     {
-        digitalWrite(STEPX, HIGH);
+        digitalWrite(STEPS[axis], HIGH);
         delayMicroseconds(motor_period);
-        digitalWrite(STEPX, LOW);
-        delayMicroseconds(motor_period);
-
-        step_count++;
-    }
-    
-
-    return step_count;
-} 
-
-int homingY()
-{
-    int step_count = 0;
-
-    if (default_y_direction_cc)
-    {
-        digitalWrite(DIRY, LOW);        
-    }
-    else
-    {
-        digitalWrite(DIRY, HIGH);
-    }
-    
-    while (homing_y_0 == 0)
-    {
-        digitalWrite(STEPY, HIGH);
-        delayMicroseconds(motor_period);
-        digitalWrite(STEPY, LOW);
-        delayMicroseconds(motor_period);
-    }
-    
-    if (!default_y_direction_cc)
-    {
-        digitalWrite(DIRY, LOW);        
-    }
-    else
-    {
-        digitalWrite(DIRY, HIGH);
-    }
-
-    while (homing_y_1 == 0)
-    {
-        digitalWrite(STEPY, HIGH);
-        delayMicroseconds(motor_period);
-        digitalWrite(STEPY, LOW);
-        delayMicroseconds(motor_period);
-
-        step_count++;
-    }
-    
-
-    return step_count;
-} 
-
-int homingZ()
-{
-    int step_count = 0;
-
-    if (default_z_direction_cc)
-    {
-        digitalWrite(DIRZ, LOW);        
-    }
-    else
-    {
-        digitalWrite(DIRZ, HIGH);
-    }
-    
-    while (homing_z_0 == 0)
-    {
-        digitalWrite(STEPZ, HIGH);
-        delayMicroseconds(motor_period);
-        digitalWrite(STEPZ, LOW);
-        delayMicroseconds(motor_period);
-    }
-    
-    if (!default_z_direction_cc)
-    {
-        digitalWrite(DIRZ, LOW);        
-    }
-    else
-    {
-        digitalWrite(DIRZ, HIGH);
-    }
-
-    while (homing_z_1 == 0)
-    {
-        digitalWrite(STEPZ, HIGH);
-        delayMicroseconds(motor_period);
-        digitalWrite(STEPZ, LOW);
+        digitalWrite(STEPS[axis], LOW);
         delayMicroseconds(motor_period);
 
         step_count++;
